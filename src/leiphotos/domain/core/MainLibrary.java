@@ -1,6 +1,11 @@
 package leiphotos.domain.core;
 
 
+import leiphotos.domain.facade.IPhoto;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
 //Class automatically generated so the code compiles
 //CHANGE ME
 public class MainLibrary implements Library {
@@ -54,4 +59,3 @@ public class MainLibrary implements Library {
         return sb.toString();
     }
 }
-
