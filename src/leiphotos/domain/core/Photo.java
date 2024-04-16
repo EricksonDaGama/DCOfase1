@@ -1,5 +1,6 @@
 package leiphotos.domain.core;
 
+import leiphotos.domain.facade.GPSCoordinates;
 import leiphotos.domain.facade.IPhoto;
 import leiphotos.utils.RegExpMatchable;
 
@@ -49,7 +50,7 @@ public class Photo implements IPhoto, RegExpMatchable {
 
     @Override
     public Optional<? extends GPSCoordinates> getPlace() {
-        return Optional.of(metadata.location());
+        return Optional.ofNullable((GPSCoordinates) metadata.location());
     }
 
     @Override
