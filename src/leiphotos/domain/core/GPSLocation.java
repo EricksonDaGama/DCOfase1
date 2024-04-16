@@ -1,27 +1,33 @@
 package leiphotos.domain.core;
 
-import leiphotos.domain.facade.GPSCoordinates;
-import leiphotos.utils.RegExpMatchable;
+public class GPSLocation {
+    private double latitude;
+    private double longitude;
+    private String description;
 
-public record GPSLocation(double latitude, double longitude, String description)
-        implements GPSCoordinates, RegExpMatchable {
+    // Construtor completo
+    public GPSLocation(double latitude, double longitude, String description) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.description = description;
+    }
 
-    @Override
-    public double latitude() {
+    // Getter para latitude
+    public double getLatitude() {
         return latitude;
     }
 
-    @Override
-    public double longitude() {
+    // Getter para longitude
+    public double getLongitude() {
         return longitude;
     }
 
-    // Método para corresponder descrições com expressões regulares
-    @Override
-    public boolean matches(String regexp) {
-        return description != null && description.matches(regexp);
+    // Getter para descrição
+    public String getDescription() {
+        return description;
     }
 
+    // Método toString para representar o objeto como uma string
     @Override
     public String toString() {
         return "GPSLocation{" +
