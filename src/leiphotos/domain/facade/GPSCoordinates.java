@@ -11,12 +11,12 @@ public interface GPSCoordinates {
 	 *
 	 * @return the latitude value
 	 */
-	double latitude();
+	public double latitude();
 
 	/**
 	 * Returns the longitude value of the GPS coordinates.
 	 *
 	 * @return the longitude value
 	 */
-	double longitude();
+	public double longitude();
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 //Class automatically generated so the code compiles
-//CHANGE ME
+//CHANGEd
 public class MainLibrary implements Library {
     private ArrayList<IPhoto> photos;
 

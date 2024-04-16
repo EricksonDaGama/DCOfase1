@@ -1,34 +1,22 @@
 package leiphotos.domain.core;
 
-import leiphotos.domain.facade.GPSCoordinate;
-import leiphotos.util.RegExprMatchable;
+import leiphotos.domain.facade.GPSCoordinates;
+import leiphotos.utils.RegExpMatchable;
 
-public class GPSLocation implements GPSCoordinate, RegExprMatchable {
-    private double latitude;
-    private double longitude;
-    private String description;
-
-    public GPSLocation(double latitude, double longitude, String description) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.description = description;
-    }
+public record GPSLocation(double latitude, double longitude, String description)
+        implements GPSCoordinates, RegExpMatchable {
 
     @Override
-    public double getLatitude() {
+    public double latitude() {
         return latitude;
     }
 
     @Override
-    public double getLongitude() {
+    public double longitude() {
         return longitude;
     }
 
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
+    // Método para corresponder descrições com expressões regulares
     @Override
     public boolean matches(String regexp) {
         return description != null && description.matches(regexp);
@@ -36,6 +24,10 @@ public class GPSLocation implements GPSCoordinate, RegExprMatchable {
 
     @Override
     public String toString() {
-        return "GPSLocation{latitude=" + latitude + ", longitude=" + longitude + ", description='" + description + "'}";
+        return "GPSLocation{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", description='" + description + '\'' +
+                '}';
     }
 }
