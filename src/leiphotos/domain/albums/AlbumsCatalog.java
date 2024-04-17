@@ -1,65 +1,79 @@
-
 package leiphotos.domain.albums;
 
-import leiphotos.domain.core.MainLibrary;
 import leiphotos.domain.facade.IPhoto;
+import leiphotos.domain.core.MainLibrary;
+
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-
-
-//Class automatically generated so the code compiles
-//CHANGEd
+/**
+ * Implementation of IAlbumsCatalog that manages a collection of albums.
+ */
 public class AlbumsCatalog implements IAlbumsCatalog {
-	private MainLibrary mainLibrary;
-	private HashMap<String, List<IPhoto>> albums;
+	private MainLibrary library;
+	private Map<String, IAlbum> albums;
 
-	public AlbumsCatalog(MainLibrary mainLibrary) {
-		this.mainLibrary = mainLibrary;
+	public AlbumsCatalog(MainLibrary library) {
+		this.library = library;
 		this.albums = new HashMap<>();
 	}
 
 	@Override
-	public void createAlbum(String albumName) {
+	public boolean createAlbum(String albumName) {
+		if (albums.containsKey(albumName)) {
+			return false;
+		}
+		albums.put(albumName, new Album(albumName, library));
+		return true;
+	}
+
+	@Override
+	public boolean deleteAlbum(String albumName) {
 		if (!albums.containsKey(albumName)) {
-			albums.put(albumName, new ArrayList<>());
+			return false;
 		}
+		albums.remove(albumName);
+		return true;
 	}
 
 	@Override
-	public void deleteAlbum(String albumName) {
-		if (albums.containsKey(albumName)) {
-			albums.remove(albumName);
+	public boolean containsAlbum(String albumName) {
+		return albums.containsKey(albumName);
+	}
+
+	@Override
+	public boolean addPhotos(String albumName, Set<IPhoto> selectedPhotos) {
+		IAlbum album = albums.get(albumName);
+		if (album == null) {
+			return false;
 		}
+		return album.addPhotos(selectedPhotos);
 	}
 
 	@Override
-	public void addPhotoToAlbum(String albumName, IPhoto photo) {
-		if (albums.containsKey(albumName) && !albums.get(albumName).contains(photo)) {
-			albums.get(albumName).add(photo);
+	public boolean removePhotos(String albumName, Set<IPhoto> selectedPhotos) {
+		IAlbum album = albums.get(albumName);
+		if (album == null) {
+			return false;
 		}
+		return album.removePhotos(selectedPhotos);
 	}
 
 	@Override
-	public void removePhotoFromAlbum(String albumName, IPhoto photo) {
-		if (albums.containsKey(albumName)) {
-			albums.get(albumName).remove(photo);
+	public List<IPhoto> getPhotos(String albumName) {
+		IAlbum album = albums.get(albumName);
+		if (album == null) {
+			return List.of();
 		}
+		return album.getPhotos();
 	}
 
 	@Override
-	public List<IPhoto> getPhotosInAlbum(String albumName) {
-		return albums.getOrDefault(albumName, new ArrayList<>());
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		albums.forEach((name, photos) -> {
-			sb.append("Album: ").append(name).append("\n");
-			photos.forEach(photo -> sb.append(photo.toString()).append("\n"));
-		});
-		return sb.toString();
+	public Set<String> getAlbumsNames() {
+		return new HashSet<>(albums.keySet());
 	}
 }
