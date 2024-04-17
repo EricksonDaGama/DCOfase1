@@ -3,10 +3,15 @@ package leiphotos.domain.core.views;
 import leiphotos.domain.core.MainLibrary;
 import leiphotos.domain.core.TrashLibrary;
 import leiphotos.domain.facade.IPhoto;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Catalog for managing different types of photo views in a library system.
+ */
 public class ViewsCatalog implements IViewsCatalog {
 	private MainLibrary mainLibrary;
 	private TrashLibrary trashLibrary;
@@ -19,8 +24,7 @@ public class ViewsCatalog implements IViewsCatalog {
 	@Override
 	public List<IPhoto> getRecentPhotos() {
 		return mainLibrary.getPhotos().stream()
-				.sorted((p1, p2) -> p2.capturedDate().compareTo(p1.capturedDate()))
-				.limit(10)
+				.sorted(Comparator.comparing(IPhoto::capturedDate).reversed())
 				.collect(Collectors.toList());
 	}
 
@@ -33,7 +37,6 @@ public class ViewsCatalog implements IViewsCatalog {
 
 	@Override
 	public List<IPhoto> getDeletedPhotos() {
-		// Convertendo Collection para List
 		return new ArrayList<>(trashLibrary.getPhotos());
 	}
 }
