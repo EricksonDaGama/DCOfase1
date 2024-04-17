@@ -1,49 +1,79 @@
 package leiphotos.domain.controllers;
 
-import java.util.Optional;
-import java.util.Set;
-
-import leiphotos.domain.core.MainLibrary;
-import leiphotos.domain.core.TrashLibrary;
+import leiphotos.domain.core.*;
 import leiphotos.domain.facade.ILibrariesController;
 import leiphotos.domain.facade.IPhoto;
 
-//Class automatically generated so the code compiles
-//CHANGE ME
-public class LibrariesController implements ILibrariesController {
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-	public LibrariesController(MainLibrary mainLib, TrashLibrary trashLib) {
-		// TODO Auto-generated constructor stub
+public class LibrariesController implements ILibrariesController {
+	private MainLibrary mainLibrary;
+	private TrashLibrary trashLibrary;
+
+	public LibrariesController(MainLibrary mainLibrary, TrashLibrary trashLibrary) {
+		this.mainLibrary = mainLibrary;
+		this.trashLibrary = trashLibrary;
 	}
 
 	@Override
 	public Optional<IPhoto> importPhoto(String title, String pathToPhotoFile) {
-		// TODO Auto-generated method stub
+		File photoFile = new File(pathToPhotoFile);
+		if (photoFile.exists()) {
+			// Criação da data atual
+			LocalDateTime now = LocalDateTime.now();
+
+			// Supondo que você tenha uma maneira de criar ou obter PhotoMetadata apropriado
+			PhotoMetadata metadata = createDefaultPhotoMetadata(now);
+
+			// Criação da foto com todos parâmetros necessários
+			IPhoto photo = new Photo(title, now, metadata, photoFile);
+			if (mainLibrary.addPhoto(photo)) {
+				return Optional.of(photo);
+			}
+		}
 		return Optional.empty();
 	}
 
+
+	private PhotoMetadata createDefaultPhotoMetadata(LocalDateTime dateAdded) {
+		// Exemplo de criação de metadados padrão, precisa ser ajustado conforme a realidade do seu projeto
+		GPSLocation location = new GPSLocation(0.0, 0.0, "Default description");
+		return new PhotoMetadata(location, "Unknown make", "Unknown model", dateAdded.toString(), "Unknown size", "No additional description");
+	}
+
+
+
 	@Override
 	public void deletePhotos(Set<IPhoto> selectedPhotos) {
-		// TODO Auto-generated method stub
-
+		selectedPhotos.forEach(photo -> {
+			if (mainLibrary.deletePhoto(photo)) {
+				trashLibrary.addPhoto(photo);
+			}
+		});
 	}
 
 	@Override
 	public void emptyTrash() {
-		// TODO Auto-generated method stub
-
+		trashLibrary.deleteAll();
 	}
 
 	@Override
 	public void toggleFavourite(Set<IPhoto> selectedPhotos) {
-		// TODO Auto-generated method stub
-
+		selectedPhotos.forEach(photo -> {
+			if (mainLibrary.getPhotos().contains(photo)) {
+				photo.toggleFavourite();
+			}
+		});
 	}
 
 	@Override
 	public Iterable<IPhoto> getMatches(String regExp) {
-		// TODO Auto-generated method stub
-		return null;
+		return mainLibrary.getPhotos().stream()
+				.filter(photo -> photo.matches(regExp))
+				.collect(Collectors.toList());
 	}
-
 }
