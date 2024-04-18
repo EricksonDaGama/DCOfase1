@@ -1,31 +1,19 @@
 package leiphotos.domain.core.views;
 
-import leiphotos.domain.facade.IPhoto;
-import java.util.List;
+import leiphotos.domain.facade.ViewsType;
+import leiphotos.domain.core.views.ILibraryView;
 
 /**
- * Interface for accessing different types of photo views.
- * This interface provides methods to get recent, favorite, and deleted photos.
+ * Interface for a catalog of library views.
+ * Provides methods to retrieve specific views based on the type.
  */
 public interface IViewsCatalog {
-    /**
-     * Gets a list of recent photos.
-     *
-     * @return a list of IPhoto representing recent photos.
-     */
-    List<IPhoto> getRecentPhotos();
 
     /**
-     * Gets a list of favorite photos.
+     * Retrieves a library view based on the specified type.
      *
-     * @return a list of IPhoto representing favorite photos.
+     * @param type the type of the view to retrieve, defined by the ViewsType enum.
+     * @return the library view corresponding to the specified type.
      */
-    List<IPhoto> getFavoritePhotos();
-
-    /**
-     * Gets a list of deleted photos.
-     *
-     * @return a list of IPhoto representing deleted photos.
-     */
-    List<IPhoto> getDeletedPhotos();
+    ILibraryView getView(ViewsType type);
 }
