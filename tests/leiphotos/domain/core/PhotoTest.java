@@ -14,73 +14,98 @@ import leiphotos.domain.facade.GPSCoordinates;
 
 class PhotoTest {
 
-	@Test
-	void testCreatePhotoWithoutGPS() {
-		LocalDateTime expectedCapturedDate = LocalDateTime.of(2024, 1, 1, 0, 0);
-		File expectedFile = new File("test.jpg");
-		String expectedTitle = "Test Photo";
-		LocalDateTime expectedAddedDate = LocalDateTime.now();
-		//COMPLETE ME
+    @Test
+    void testCreatePhotoWithoutGPS() {
+        LocalDateTime expectedCapturedDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+        File expectedFile = new File("test.jpg");
+        String expectedTitle = "Test Photo";
+        LocalDateTime expectedAddedDate = LocalDateTime.now();
+        PhotoMetadata metadata = new PhotoMetadata(null, "Unknown make", "Unknown model", expectedCapturedDate.toString(), "Unknown size", "No description");
+        Photo photo = new Photo(expectedTitle, expectedAddedDate, metadata, expectedFile);
 
-	}
+        assertEquals(expectedTitle, photo.title());
+        assertEquals(expectedAddedDate, photo.addedDate());
+        assertEquals(expectedFile, photo.file());
+    }
 
-	@Test
-	void testCreatePhotoWithGPS() {
-		//COMPLETE ME
-	}
+    @Test
+    void testCreatePhotoWithGPS() {
+        LocalDateTime expectedCapturedDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+        File expectedFile = new File("test.jpg");
+        String expectedTitle = "Test Photo";
+        LocalDateTime expectedAddedDate = LocalDateTime.now();
+        GPSLocation location = new GPSLocation(30.0, -90.0, "Test location");
+        PhotoMetadata metadata = new PhotoMetadata(location, "Unknown make", "Unknown model", expectedCapturedDate.toString(), "Unknown size", "No description");
+        Photo photo = new Photo(expectedTitle, expectedAddedDate, metadata, expectedFile);
 
-	@Test
-	void testToggleFavourite() {
-		//COMPLETE ME
-	}
+        assertEquals(expectedTitle, photo.title());
+        assertEquals(expectedFile, photo.file());
+        assertTrue(photo.getPlace().isPresent());
+        assertEquals(location, photo.getPlace().get());
+    }
 
-	@Test
-	void testSize() { //requires the use of a mock file class
-		long expectedSize = 1024;
-		MockFile expectedFile = new MockFile("test.jpg",expectedSize);
-		String expectedTitle = "Test Photo";
-		LocalDateTime expectedAddedDate = LocalDateTime.now();
-		//COMPLETE ME
-	}
+    @Test
+    void testToggleFavourite() {
+        File file = new File("test.jpg");
+        Photo photo = new Photo("Test", LocalDateTime.now(), null, file);
+        assertFalse(photo.isFavourite());
+        photo.toggleFavourite();
+        assertTrue(photo.isFavourite());
+        photo.toggleFavourite();
+        assertFalse(photo.isFavourite());
+    }
 
-	@Test
-	void testNoMatches() {
-		String regexp = "Exp.*";
-		//COMPLETE ME
-	}
+    @Test
+    void testSize() {
+        long expectedSize = 1024;
+        MockFile file = new MockFile("test.jpg", expectedSize);
+        Photo photo = new Photo("Test Photo", LocalDateTime.now(), null, file);
+        assertEquals(expectedSize, photo.size());
+    }
 
+    @Test
+    void testNoMatches() {
+        String regexp = "Exp.*";
+        Photo photo = new Photo("Test Photo", LocalDateTime.now(), null, new File("test.jpg"));
+        assertFalse(photo.matches(regexp));
+    }
 
-	@Test
-	void testMatchesTitle() {
-		String regexp = "Test.*";
-		//COMPLETE ME
+    @Test
+    void testMatchesTitle() {
+        String regexp = "Test.*";
+        Photo photo = new Photo("Test Photo", LocalDateTime.now(), null, new File("test.jpg"));
+        assertTrue(photo.matches(regexp));
+    }
 
-	}
+    @Test
+    void testMatchesFile() {
+        String regexp = ".*test.*";
+        Photo photo = new Photo("Test Photo", LocalDateTime.now(), null, new File("test.jpg"));
+        assertTrue(photo.matches(regexp));
+    }
 
+    @Test
+    void testEquals() {
+        File file1 = new File("test1.jpg");
+        File file2 = new File("test2.jpg");
+        File file3 = new File("test1.jpg");
+        Photo photo1 = new Photo("Test", LocalDateTime.now(), null, file1);
+        Photo photo2 = new Photo("Test", LocalDateTime.now(), null, file2);
+        Photo photo3 = new Photo("Test", LocalDateTime.now(), null, file3);
 
-	@Test
-	void testMatchesFile() {
-		String regexp = "Test.*";
-		//COMPLETE ME
-	}
+        assertFalse(photo1.equals(photo2));
+        assertTrue(photo1.equals(photo3));
+    }
 
-	@Test
-	void testEquals() {
-		File file1 = new File("test1.jpg");
-		File file2 = new File("test2.jpg");
-		File file3 = new File("test1.jpg");
+    @Test
+    void testHashCode() {
+        File file1 = new File("test1.jpg");
+        File file2 = new File("test1.jpg");
+        Photo photo1 = new Photo("Test", LocalDateTime.now(), null, file1);
+        Photo photo2 = new Photo("Test", LocalDateTime.now(), null, file2);
 
-		//COMPLETE ME
-	}
+        assertEquals(photo1.hashCode(), photo2.hashCode());
+    }
 
-	@Test
-	void testHashCode() {
-		File file1 = new File("test1.jpg");
-		File file2 = new File("test1.jpg");
-
-		//COMPLETE ME
-	}
-
-	//COMPLETE ME
-
+    // Additional test cases can be added here if needed
 }

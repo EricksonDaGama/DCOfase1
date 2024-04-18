@@ -4,73 +4,91 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import leiphotos.domain.albums.IAlbumsCatalog;
 import leiphotos.domain.facade.IAlbumsController;
 import leiphotos.domain.facade.IPhoto;
 
 
-//Class automatically generated so the code compiles
-//CHANGE ME
-
 public class AlbumsController implements IAlbumsController {
 
+	private final IAlbumsCatalog albumsCatalog;
+	private String selectedAlbumName;
+
 	public AlbumsController(IAlbumsCatalog albumsCatalog) {
-		// TODO Auto-generated constructor stub
+		this.albumsCatalog = albumsCatalog;
+		this.selectedAlbumName = null;
 	}
 
 	@Override
 	public boolean createAlbum(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		return albumsCatalog.createAlbum(name);
 	}
 
 	@Override
 	public void removeAlbum() {
-		// TODO Auto-generated method stub
-
+		if (selectedAlbumName != null) {
+			albumsCatalog.deleteAlbum(selectedAlbumName);
+			selectedAlbumName = null;
+		}
 	}
 
 	@Override
 	public void selectAlbum(String name) {
-		// TODO Auto-generated method stub
-
+		if (albumsCatalog.containsAlbum(name)) {
+			selectedAlbumName = name;
+		}
 	}
 
 	@Override
 	public void addPhotos(Set<IPhoto> selectedPhotos) {
-		// TODO Auto-generated method stub
-
+		if (selectedAlbumName != null) {
+			albumsCatalog.addPhotos(selectedAlbumName, selectedPhotos);
+		}
 	}
 
 	@Override
 	public void removePhotos(Set<IPhoto> selectedPhotos) {
-		// TODO Auto-generated method stub
-
+		if (selectedAlbumName != null) {
+			albumsCatalog.removePhotos(selectedAlbumName, selectedPhotos);
+		}
 	}
 
 	@Override
 	public List<IPhoto> getPhotos() {
-		// TODO Auto-generated method stub
-		return null;
+		if (selectedAlbumName != null) {
+			return albumsCatalog.getPhotos(selectedAlbumName);
+		} else {
+			return List.of();
+		}
 	}
 
 	@Override
 	public Optional<String> getSelectedAlbum() {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		return Optional.ofNullable(selectedAlbumName);
 	}
 
 	@Override
 	public boolean createSmartAlbum(String name, Predicate<IPhoto> criteria) {
-		// TODO Auto-generated method stub
-		return false;
+		if (albumsCatalog.containsAlbum(name)){
+			return false;
+		}
+
+		boolean created = albumsCatalog.createAlbum(name);
+		if (created) {
+			albumsCatalog.addPhotos(name, getPhotos().stream()
+					.filter(criteria)
+					.collect(Collectors.toSet()));
+
+		}
+
+		return created;
 	}
 
 	@Override
 	public Set<String> getAlbumNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return albumsCatalog.getAlbumsNames();
 	}
 
 }

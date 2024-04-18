@@ -15,9 +15,9 @@ import leiphotos.domain.facade.IPhoto;
 
 class RecentlyDeletedLibraryTest {
 
-	private static final int SECONDS_IN_TRASH = 0; //CHANGE ME
-	private static final int SECONDS_TO_CHECK = 0;  //CHANGE ME
-	
+	private static final int SECONDS_IN_TRASH = 300; // 5 minutes in the trash before deletion
+	private static final int SECONDS_TO_CHECK = 299;  // 1 second less than the trash time to check no deletion happens
+
 	private RecentlyDeletedLibrary library;
 
 	@BeforeEach
@@ -37,18 +37,18 @@ class RecentlyDeletedLibraryTest {
 	@Test
 	void testAddExistingPhoto() {
 		MockPhoto photo = new MockPhoto(new File("Test.jpg"));
-
-		//COMPLETE ME
+		assertTrue(library.addPhoto(photo));
+		assertFalse(library.addPhoto(photo));
+		assertEquals(1, library.getNumberOfPhotos());
 	}
-
 
 	@Test
 	void testDeletePhoto() {
 		MockPhoto photo = new MockPhoto(new File("Test.jpg"));
 		library.addPhoto(photo);
-		
-		//COMPLETE ME
-		
+
+		assertTrue(library.deletePhoto(photo));
+		assertFalse(library.getPhotos().contains(photo));
 	}
 
 	@Test
@@ -56,10 +56,9 @@ class RecentlyDeletedLibraryTest {
 		MockPhoto photo1 = new MockPhoto(new File("One.jpg"));
 		MockPhoto photo2 = new MockPhoto(new File("Two.jpg"));
 		library.addPhoto(photo1);
-		
-		//COMPLETE ME
-	}
 
+		assertFalse(library.deletePhoto(photo2));
+	}
 
 	@Test
 	void testDeleteAll() {
@@ -68,27 +67,27 @@ class RecentlyDeletedLibraryTest {
 		library.addPhoto(photo1);
 		library.addPhoto(photo2);
 
-		//COMPLETE ME
+		library.deleteAll();
+		assertTrue(library.getPhotos().isEmpty());
 	}
 
 	@Test
 	void testGetMatchesEmpty() {
 		Collection<IPhoto> matches = library.getMatches(".*");
 		assertNotNull(matches);
-
-		//COMPLETE ME
+		assertTrue(matches.isEmpty());
 	}
 
 	@Test
 	void testGetMatchesNotEmpty() {
-		MockPhoto photoY = new MockPhoto(new File("Y.jpg"),true);
-		MockPhoto photoN = new MockPhoto(new File("N.jpg"),false);
+		MockPhoto photoY = new MockPhoto(new File("Y.jpg"), true);
+		MockPhoto photoN = new MockPhoto(new File("N.jpg"), false);
 		library.addPhoto(photoY);
 		library.addPhoto(photoN);
 		Collection<IPhoto> matches = library.getMatches(".*");
 
-		//COMPLETE ME
-		
+		assertTrue(matches.contains(photoY));
+		assertFalse(matches.contains(photoN));
 	}
 
 	@Test
@@ -98,12 +97,10 @@ class RecentlyDeletedLibraryTest {
 		library.addPhoto(photo1);
 		library.addPhoto(photo2);
 		Thread.sleep(SECONDS_IN_TRASH * 1000);
-		Collection<IPhoto> photos = library.getPhotos();
-		
-		//COMPLETE ME
-		
-	}
 
+		library.clean();
+		assertTrue(library.getPhotos().isEmpty());
+	}
 
 	@Test
 	void testAutomaticDeleteNoEffectTooSoon() {
@@ -111,23 +108,21 @@ class RecentlyDeletedLibraryTest {
 		MockPhoto photo2 = new MockPhoto(new File("Two.jpg"));
 		library.addPhoto(photo1);
 		library.addPhoto(photo2);
-		Collection<IPhoto> photos = library.getPhotos();
-		
-		//COMPLETE ME	
+		library.clean();
+		assertEquals(2, library.getNumberOfPhotos());
 	}
 
 	@Test
-	void testAutomaticDeleteNoEffectCheckedJustBefore() throws InterruptedException {    	
+	void testAutomaticDeleteNoEffectCheckedJustBefore() throws InterruptedException {
 		MockPhoto photo1 = new MockPhoto(new File("One.jpg"));
 		MockPhoto photo2 = new MockPhoto(new File("Two.jpg"));
 		library.addPhoto(photo1);
 		library.addPhoto(photo2);
 		Thread.sleep(SECONDS_TO_CHECK * 1000);
-		Collection<IPhoto> photos = library.getPhotos();
-		
-		//COMPLETE ME
+
+		library.clean();
+		assertEquals(2, library.getNumberOfPhotos());
 	}
-	
-	//COMPLETE ME
+
 
 }
