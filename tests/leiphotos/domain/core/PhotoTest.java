@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -46,14 +47,16 @@ class PhotoTest {
 
     @Test
     void testToggleFavourite() {
+        PhotoMetadata metadata = new PhotoMetadata(null, "Unknown make", "Unknown model", "2024-01-01T00:00", "1MB", "No description");
         File file = new File("test.jpg");
-        Photo photo = new Photo("Test", LocalDateTime.now(), null, file);
+        Photo photo = new Photo("Test", LocalDateTime.now(), metadata, file);
         assertFalse(photo.isFavourite());
         photo.toggleFavourite();
         assertTrue(photo.isFavourite());
         photo.toggleFavourite();
         assertFalse(photo.isFavourite());
     }
+
 
     @Test
     void testSize() {
@@ -86,26 +89,35 @@ class PhotoTest {
 
     @Test
     void testEquals() {
+        LocalDateTime now = LocalDateTime.now();  // Ensure this is the same for all instances
         File file1 = new File("test1.jpg");
         File file2 = new File("test2.jpg");
         File file3 = new File("test1.jpg");
-        Photo photo1 = new Photo("Test", LocalDateTime.now(), null, file1);
-        Photo photo2 = new Photo("Test", LocalDateTime.now(), null, file2);
-        Photo photo3 = new Photo("Test", LocalDateTime.now(), null, file3);
+
+        Photo photo1 = new Photo("Test", now, null, file1);
+        Photo photo2 = new Photo("Test", now, null, file2);
+        Photo photo3 = new Photo("Test", now, null, file3);
+
+        System.out.println("photo1.equals(photo2): " + photo1.equals(photo2));  // Expected false
+        System.out.println("photo1.equals(photo3): " + photo1.equals(photo3));  // Expected true
 
         assertFalse(photo1.equals(photo2));
         assertTrue(photo1.equals(photo3));
     }
 
+
     @Test
     void testHashCode() {
+        LocalDateTime now = LocalDateTime.now();  // Capture the current time once
         File file1 = new File("test1.jpg");
         File file2 = new File("test1.jpg");
-        Photo photo1 = new Photo("Test", LocalDateTime.now(), null, file1);
-        Photo photo2 = new Photo("Test", LocalDateTime.now(), null, file2);
+        Photo photo1 = new Photo("Test", now, null, file1);
+        Photo photo2 = new Photo("Test", now, null, file2);
 
         assertEquals(photo1.hashCode(), photo2.hashCode());
     }
+
+
 
     // Additional test cases can be added here if needed
 }

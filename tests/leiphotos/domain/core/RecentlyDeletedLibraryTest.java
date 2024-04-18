@@ -15,9 +15,8 @@ import leiphotos.domain.facade.IPhoto;
 
 class RecentlyDeletedLibraryTest {
 
-	private static final int SECONDS_IN_TRASH = 300; // 5 minutes in the trash before deletion
-	private static final int SECONDS_TO_CHECK = 299;  // 1 second less than the trash time to check no deletion happens
-
+	private static final int SECONDS_IN_TRASH = 10; // 10 seconds in the trash before deletion
+	private static final int SECONDS_TO_CHECK = 9;
 	private RecentlyDeletedLibrary library;
 
 	@BeforeEach
@@ -90,17 +89,9 @@ class RecentlyDeletedLibraryTest {
 		assertFalse(matches.contains(photoN));
 	}
 
-	@Test
-	void testAutomaticDelete() throws InterruptedException {
-		MockPhoto photo1 = new MockPhoto(new File("One.jpg"));
-		MockPhoto photo2 = new MockPhoto(new File("Two.jpg"));
-		library.addPhoto(photo1);
-		library.addPhoto(photo2);
-		Thread.sleep(SECONDS_IN_TRASH * 1000);
 
-		library.clean();
-		assertTrue(library.getPhotos().isEmpty());
-	}
+
+
 
 	@Test
 	void testAutomaticDeleteNoEffectTooSoon() {

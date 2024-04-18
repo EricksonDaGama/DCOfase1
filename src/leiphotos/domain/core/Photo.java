@@ -6,6 +6,7 @@ import leiphotos.utils.RegExpMatchable;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Photo implements IPhoto, RegExpMatchable {
@@ -65,8 +66,35 @@ public class Photo implements IPhoto, RegExpMatchable {
 
     @Override
     public boolean matches(String regexp) {
-        return metadata.matches(regexp) ||
+        return (metadata != null && metadata.matches(regexp)) ||
                 title.matches(regexp) ||
                 pathToFile.getPath().matches(regexp);
     }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, dateAddedLib, metadata, pathToFile, isFavorite);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Photo other = (Photo) obj;
+        return Objects.equals(title, other.title) &&
+                Objects.equals(dateAddedLib, other.dateAddedLib) &&
+                Objects.equals(metadata, other.metadata) &&
+                Objects.equals(pathToFile, other.pathToFile) &&
+                isFavorite == other.isFavorite;
+    }
+
+
+
+
+
+
+
+
+
 }
