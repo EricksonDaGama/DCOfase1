@@ -48,4 +48,15 @@ public abstract class ALibraryView implements ILibraryView {
                 .sorted(comparator)
                 .collect(Collectors.toList());
     }
+
+
+    @Override
+    public String toString() {
+        return "View: " + getClass().getSimpleName() + "\n" +
+                "Photos: " + getPhotos().stream()
+                .map(IPhoto::toString)
+                .collect(Collectors.joining(", "));
+    }
+
+
 }

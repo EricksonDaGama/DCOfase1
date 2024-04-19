@@ -6,6 +6,7 @@ import leiphotos.utils.RegExpMatchable;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -51,7 +52,7 @@ public class Photo implements IPhoto, RegExpMatchable {
 
     @Override
     public Optional<? extends GPSCoordinates> getPlace() {
-        return Optional.ofNullable((GPSCoordinates) metadata.location());
+        return Optional.ofNullable(metadata.location());
     }
 
     @Override
@@ -66,11 +67,10 @@ public class Photo implements IPhoto, RegExpMatchable {
 
     @Override
     public boolean matches(String regexp) {
-        return (metadata != null && metadata.matches(regexp)) ||
+        return metadata.matches(regexp) ||
                 title.matches(regexp) ||
                 pathToFile.getPath().matches(regexp);
     }
-
 
     @Override
     public int hashCode() {
@@ -89,12 +89,32 @@ public class Photo implements IPhoto, RegExpMatchable {
                 isFavorite == other.isFavorite;
     }
 
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDate = dateAddedLib.format(formatter);
+        String gpsString;
 
+        Optional<? extends GPSCoordinates> gpsOpt = getPlace();
+        if (gpsOpt.isPresent()) {
+            GPSCoordinates gps = gpsOpt.get();
+            if (gps instanceof GPSLocation) {
+                GPSLocation location = (GPSLocation) gps;
+                gpsString = String.format("[Lat:%.2f Long:%.2f Desc:%s]", location.latitude(), location.longitude(), location.description());
+            } else {
+                gpsString = String.format("[Lat:%.2f Long:%.2f]", gps.latitude(), gps.longitude());
+            }
+        } else {
+            gpsString = "[No Location]";
+        }
 
-
-
-
-
+        return String.format("File:%s\nTitle:%s Added:%s Size:%d\n%s",
+                file().getPath(),
+                title(),
+                formattedDate,
+                size(),
+                gpsString);
+    }
 
 
 }

@@ -8,28 +8,25 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LibrariesController implements ILibrariesController {
 	private MainLibrary mainLibrary;
 	private TrashLibrary trashLibrary;
 
-	public LibrariesController(MainLibrary mainLibrary, TrashLibrary trashLibrary) {
-		this.mainLibrary = mainLibrary;
-		this.trashLibrary = trashLibrary;
+	public LibrariesController(MainLibrary mainLib, TrashLibrary trashLib) {
+		this.mainLibrary = mainLib;
+		this.trashLibrary = trashLib;
 	}
 
 	@Override
 	public Optional<IPhoto> importPhoto(String title, String pathToPhotoFile) {
 		File photoFile = new File(pathToPhotoFile);
 		if (photoFile.exists()) {
-			// Criação da data atual
 			LocalDateTime now = LocalDateTime.now();
-
-			// Supondo que você tenha uma maneira de criar ou obter PhotoMetadata apropriado
-			PhotoMetadata metadata = createDefaultPhotoMetadata(now);
-
-			// Criação da foto com todos parâmetros necessários
+			// Example of creating photo metadata, adjust as necessary for your project
+			PhotoMetadata metadata = new PhotoMetadata(new GPSLocation(0.0, 0.0, "Default location"),
+					"Camera Brand", "Camera Model", now.toString(),
+					"File Size", "Description");
 			IPhoto photo = new Photo(title, now, metadata, photoFile);
 			if (mainLibrary.addPhoto(photo)) {
 				return Optional.of(photo);
@@ -38,22 +35,13 @@ public class LibrariesController implements ILibrariesController {
 		return Optional.empty();
 	}
 
-
-	private PhotoMetadata createDefaultPhotoMetadata(LocalDateTime dateAdded) {
-		// Exemplo de criação de metadados padrão, precisa ser ajustado conforme a realidade do seu projeto
-		GPSLocation location = new GPSLocation(0.0, 0.0, "Default description");
-		return new PhotoMetadata(location, "Unknown make", "Unknown model", dateAdded.toString(), "Unknown size", "No additional description");
-	}
-
-
-
 	@Override
 	public void deletePhotos(Set<IPhoto> selectedPhotos) {
-		selectedPhotos.forEach(photo -> {
+		for (IPhoto photo : selectedPhotos) {
 			if (mainLibrary.deletePhoto(photo)) {
 				trashLibrary.addPhoto(photo);
 			}
-		});
+		}
 	}
 
 	@Override
@@ -63,17 +51,22 @@ public class LibrariesController implements ILibrariesController {
 
 	@Override
 	public void toggleFavourite(Set<IPhoto> selectedPhotos) {
-		selectedPhotos.forEach(photo -> {
+		for (IPhoto photo : selectedPhotos) {
 			if (mainLibrary.getPhotos().contains(photo)) {
 				photo.toggleFavourite();
 			}
-		});
+		}
 	}
 
 	@Override
 	public Iterable<IPhoto> getMatches(String regExp) {
-		return mainLibrary.getPhotos().stream()
-				.filter(photo -> photo.matches(regExp))
-				.collect(Collectors.toList());
+		return mainLibrary.getMatches(regExp);
+	}
+
+	@Override
+	public String toString() {
+		return "Libraries Controller State:\n" +
+				"Main Library: " + mainLibrary +
+				"\nTrash Library: " + trashLibrary;
 	}
 }

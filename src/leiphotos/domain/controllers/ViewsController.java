@@ -1,5 +1,6 @@
 package leiphotos.domain.controllers;
 
+import leiphotos.domain.core.views.ILibraryView;
 import leiphotos.domain.core.views.IViewsCatalog;
 import leiphotos.domain.facade.IPhoto;
 import leiphotos.domain.facade.IViewsController;
@@ -28,4 +29,25 @@ public class ViewsController implements IViewsController {
     public void setSortingCriteria(ViewsType viewType, Comparator<IPhoto> criteria) {
         viewsCatalog.getView(viewType).setComparator(criteria);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("Views Controller State:\n");
+        for (ViewsType viewType : ViewsType.values()) {
+            try {
+                ILibraryView view = viewsCatalog.getView(viewType);
+                builder.append(viewType.name())
+                        .append(": ")
+                        .append(view.toString())
+                        .append("\n");
+            } catch (IllegalArgumentException e) {
+                builder.append(viewType.name())
+                        .append(": Unknown view type\n");
+            }
+        }
+        return builder.toString();
+    }
+
+
+
 }

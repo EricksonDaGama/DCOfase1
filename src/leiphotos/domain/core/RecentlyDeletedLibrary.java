@@ -58,4 +58,14 @@ public class RecentlyDeletedLibrary extends ATrashLibrary {
                 .filter(photo -> photo.matches(regexp))
                 .collect(Collectors.toList());
     }
+
+
+    @Override
+    public String toString() {
+        return "***** MAIN PHOTO LIBRARY: " + photos.size() + " photos *****\n" +
+                photos.stream()
+                        .map(photo -> photo.toString())  // Uso explícito de toString via lambda
+                        .collect(Collectors.joining("\n"));
+    }
+
 }

@@ -9,6 +9,7 @@ import leiphotos.domain.core.PhotoDeletedLibraryEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainLibrary implements Library {
     private List<IPhoto> photos;
@@ -73,4 +74,15 @@ public class MainLibrary implements Library {
         }
         return matchedPhotos;
     }
+
+    @Override
+    public String toString() {
+        return "***** MAIN PHOTO LIBRARY: " + photos.size() + " photos *****\n" +
+                photos.stream()
+                        .map(photo -> photo.toString())  // Uso explícito de toString via lambda
+                        .collect(Collectors.joining("\n"));
+    }
+
+
+
 }
