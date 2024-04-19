@@ -91,4 +91,11 @@ public class AlbumsController implements IAlbumsController {
 		return albumsCatalog.getAlbumsNames();
 	}
 
+	public String toString() {
+		int numberOfAlbums = albumsCatalog.getAlbumsNames().size();
+		return String.format("Albums Controller [Selected Album: %s, Total Albums: %d]",
+				selectedAlbumName != null ? selectedAlbumName : "None",
+				numberOfAlbums);
+	}
+
 }
